@@ -21,5 +21,9 @@ public class CategoryEntityTypeConfiguration : IEntityTypeConfiguration<Category
       .WithMany(u => u.Categories)
       .HasForeignKey(c => c.UserId)
       .OnDelete(DeleteBehavior.Cascade);
+
+    builder
+      .HasIndex(c => c.UserId)
+      .HasDatabaseName("idx_categories_user_id");
   }
 }

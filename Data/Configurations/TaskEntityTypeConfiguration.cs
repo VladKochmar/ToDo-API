@@ -35,5 +35,13 @@ public class TaskEntityTypeConfiguration : IEntityTypeConfiguration<TaskItem>
       .WithMany(c => c.Tasks)
       .HasForeignKey(t => t.CategoryId)
       .OnDelete(DeleteBehavior.SetNull);
+
+    builder
+      .HasIndex(t => new { t.UserId, t.CategoryId, t.DueDate })
+      .HasDatabaseName("idx_tasks__user_category_due");
+
+    builder
+      .HasIndex(t => new {t.DueDate})
+      .HasDatabaseName("idx_tasks_user_due");
   }
 }
