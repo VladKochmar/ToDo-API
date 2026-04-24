@@ -15,14 +15,8 @@ public class CategoriesController(ICategoryService service, IValidator<CategoryR
   public async Task<IActionResult> GetCategories() => Ok(await service.GetAll());
 
   [HttpGet("{id:guid}")]
-  public async Task<IActionResult> GetCategoryById(Guid id)
-  {
-    CategoryResponse? category = await service.GetById(id);
-    if (category is null) 
-      return NotFound("Category with the given ID was not found.");
-
-    return Ok(category);
-  }
+  public async Task<IActionResult> GetCategoryById(Guid id) =>
+    Ok(await service.GetById(id));
 
   [HttpPost]
   public async Task<IActionResult> CreateCategory(CategoryRequest request)
@@ -36,14 +30,14 @@ public class CategoriesController(ICategoryService service, IValidator<CategoryR
   public async Task<IActionResult> UpdateCategory(Guid id, CategoryRequest request)
   {
     await validator.ValidateAndThrowAsync(request);
-    bool updated = await service.Update(id, request);
-    return updated ? NoContent() : NotFound("Category with the given ID was not found.");
+    await service.Update(id, request);
+    return NoContent();
   }
 
   [HttpDelete("{id:guid}")]
   public async Task<IActionResult> DeleteCategory(Guid id)
   {
-    bool deleted = await service.Delete(id);
-    return deleted ? NoContent() : NotFound("Category with the given ID was not found.");
+    await service.Delete(id);
+    return NoContent();
   }
 }

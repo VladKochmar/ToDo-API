@@ -14,14 +14,8 @@ public class TasksController(ITaskService service, IValidator<CreateTaskRequest>
   public async Task<IActionResult> GetTasks() => Ok(await service.GetAll());
 
   [HttpGet("{id:guid}")]
-  public async Task<IActionResult> GetTaskById(Guid id)
-  {
-    TaskResponse? taskItem = await service.GetById(id);
-    if (taskItem is null) 
-      return NotFound("Task with the given ID was not found.");
-
-    return Ok(taskItem);
-  }
+  public async Task<IActionResult> GetTaskById(Guid id) =>
+    Ok(await service.GetById(id));
 
   [HttpPost]
   public async Task<IActionResult> CreateTask(CreateTaskRequest request)
@@ -37,14 +31,14 @@ public class TasksController(ITaskService service, IValidator<CreateTaskRequest>
   {
     await updateValidator.ValidateAndThrowAsync(request);
 
-    bool updated = await service.Update(id, request);
-    return updated ? NoContent() : NotFound("Task with the given ID was not found.");
+    await service.Update(id, request);
+    return NoContent();
   }
 
   [HttpDelete("{id:guid}")]
   public async Task<IActionResult> DeleteTask(Guid id)
   {
-    bool deleted = await service.Delete(id);
-    return deleted ? NoContent() : NotFound("Task with the given ID was not found.");
+    await service.Delete(id);
+    return NoContent();
   }
 }
