@@ -6,11 +6,15 @@ using ToDoApi.Models.Entities;
 
 namespace ToDoApi.Services;
 
-public class CategoryService(AppDbContext context, ICurrentUserService userService) : ICategoryService
+public class CategoryService(AppDbContext context, IUserContext userContext) : ICategoryService
 {
   public async Task<CategoryResponse> GetById(Guid id)
   {
-    Guid userId = userService.GetUserId();
+    string authId = userContext.AuthId();
+    Guid userId = await context.Users
+      .Where(u => u.AuthId == authId)
+      .Select(u => u.Id)
+      .FirstOrDefaultAsync();
 
     Category? category = await context.Categories.FirstOrDefaultAsync(c => c.Id == id && c.UserId == userId);
     
@@ -22,7 +26,11 @@ public class CategoryService(AppDbContext context, ICurrentUserService userServi
 
   public async Task<IReadOnlyList<CategoryResponse>> GetAll()
   {
-    Guid userId = userService.GetUserId();
+    string authId = userContext.AuthId();
+    Guid userId = await context.Users
+      .Where(u => u.AuthId == authId)
+      .Select(u => u.Id)
+      .FirstOrDefaultAsync();
 
     List<CategoryResponse> categories = await context.Categories
       .Where(c => c.UserId == userId)
@@ -34,7 +42,11 @@ public class CategoryService(AppDbContext context, ICurrentUserService userServi
 
   public async Task<CategoryResponse> Create(CategoryRequest request)
   {
-    Guid userId = userService.GetUserId();
+    string authId = userContext.AuthId();
+    Guid userId = await context.Users
+      .Where(u => u.AuthId == authId)
+      .Select(u => u.Id)
+      .FirstOrDefaultAsync();
 
     bool exists = await context.Categories.AnyAsync(c => c.Title == request.Title && c.UserId == userId);
     
@@ -56,7 +68,11 @@ public class CategoryService(AppDbContext context, ICurrentUserService userServi
 
   public async Task Update(Guid id, CategoryRequest request)
   {
-    Guid userId = userService.GetUserId();
+    string authId = userContext.AuthId();
+    Guid userId = await context.Users
+      .Where(u => u.AuthId == authId)
+      .Select(u => u.Id)
+      .FirstOrDefaultAsync();
 
     Category? category = await context.Categories.FirstOrDefaultAsync(c => c.Id == id && c.UserId == userId);
     
@@ -75,7 +91,11 @@ public class CategoryService(AppDbContext context, ICurrentUserService userServi
 
   public async Task Delete(Guid id)
   {
-    Guid userId = userService.GetUserId();
+    string authId = userContext.AuthId();
+    Guid userId = await context.Users
+      .Where(u => u.AuthId == authId)
+      .Select(u => u.Id)
+      .FirstOrDefaultAsync();
     
     Category? category = await context.Categories.FirstOrDefaultAsync(c => c.Id == id && c.UserId == userId);
     

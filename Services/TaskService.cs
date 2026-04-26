@@ -6,11 +6,15 @@ using ToDoApi.Models.Entities;
 
 namespace ToDoApi.Services;
 
-public class TaskService(AppDbContext context, ICurrentUserService userService) : ITaskService
+public class TaskService(AppDbContext context, IUserContext userContext) : ITaskService
 {
   public async Task<TaskResponse> Create(CreateTaskRequest request)
   {
-    Guid userId = userService.GetUserId();
+    string authId = userContext.AuthId();
+    Guid userId = await context.Users
+      .Where(u => u.AuthId == authId)
+      .Select(u => u.Id)
+      .FirstOrDefaultAsync();
 
     if (request.CategoryId is not null)
     {
@@ -50,7 +54,11 @@ public class TaskService(AppDbContext context, ICurrentUserService userService) 
 
   public async Task Delete(Guid id)
   {
-    Guid userId = userService.GetUserId();
+    string authId = userContext.AuthId();
+    Guid userId = await context.Users
+      .Where(u => u.AuthId == authId)
+      .Select(u => u.Id)
+      .FirstOrDefaultAsync();
 
     TaskItem? taskItem = await context.Tasks.FirstOrDefaultAsync(t => t.Id == id && t.UserId == userId);
     
@@ -63,7 +71,11 @@ public class TaskService(AppDbContext context, ICurrentUserService userService) 
 
   public async Task<IReadOnlyList<TaskResponse>> GetAll()
   {
-    Guid userId = userService.GetUserId();
+    string authId = userContext.AuthId();
+    Guid userId = await context.Users
+      .Where(u => u.AuthId == authId)
+      .Select(u => u.Id)
+      .FirstOrDefaultAsync();
 
     List<TaskResponse> tasks = await context.Tasks
       .Where(t => t.UserId == userId)
@@ -82,7 +94,11 @@ public class TaskService(AppDbContext context, ICurrentUserService userService) 
 
   public async Task<TaskResponse> GetById(Guid id)
   {
-    Guid userId = userService.GetUserId();
+    string authId = userContext.AuthId();
+    Guid userId = await context.Users
+      .Where(u => u.AuthId == authId)
+      .Select(u => u.Id)
+      .FirstOrDefaultAsync();
 
     TaskItem? taskItem = await context.Tasks.FirstOrDefaultAsync(t => t.Id == id && t.UserId == userId);
     
@@ -101,7 +117,11 @@ public class TaskService(AppDbContext context, ICurrentUserService userService) 
 
   public async Task Update(Guid id, UpdateTaskRequest request)
   {
-    Guid userId = userService.GetUserId();
+    string authId = userContext.AuthId();
+    Guid userId = await context.Users
+      .Where(u => u.AuthId == authId)
+      .Select(u => u.Id)
+      .FirstOrDefaultAsync();
 
     TaskItem? taskItem = await context.Tasks.FirstOrDefaultAsync(t => t.Id == id && t.UserId == userId);
     
@@ -112,7 +132,7 @@ public class TaskService(AppDbContext context, ICurrentUserService userService) 
       throw new ConflictException("Task already completed.");
 
     bool taskExists = await context.Tasks.AnyAsync(t => t.Title == request.Title &&
-    t.CategoryId == request.CategoryId && t.UserId == userId);
+    t.CategoryId == request.CategoryId && t.UserId == userId && t.Id != taskItem.Id);
 
     if (taskExists)
       throw new ConflictException($"Task '{request.Title}' already exists.");

@@ -1,4 +1,3 @@
-using System.Text;
 using FluentValidation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -24,32 +23,35 @@ builder.Services.AddDbContext<AppDbContext>(options =>
         .UseSnakeCaseNamingConvention();
 });
 
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddJwtBearer(options =>
+builder.Services.AddAuthentication(options =>
     {
+        options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+        options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    }).AddJwtBearer(options =>
+    {
+        options.Audience = builder.Configuration["Auth0:Audience"];
+        options.Authority = builder.Configuration["Auth0:Authority"];
+
         options.TokenValidationParameters = new TokenValidationParameters
         {
             ValidateIssuer = true,
-            ValidIssuer = builder.Configuration["JwtConfig:Issuer"],
             ValidateAudience = true,
-            ValidAudience = builder.Configuration["JwtConfig:Audience"],
             ValidateLifetime = true,
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JwtConfig:Key"]!)),
-            ValidateIssuerSigningKey = true,
+            ValidTypes = ["at+jwt", "JWT"]
         };
     });
 
 builder.Services.AddControllers();
-builder.Services.AddHttpContextAccessor();
 
-builder.Services.AddScoped<IValidator<LoginUserRequest>, LoginUserRequestValidator>();
-builder.Services.AddScoped<IValidator<RegisterUserRequest>, RegisterUserRequestValidator>();
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<IUserContext, UserContext>();
+
+builder.Services.AddScoped<IValidator<CreateUserRequest>, CreateUserRequestValidator>();
 builder.Services.AddScoped<IValidator<CreateTaskRequest>, CreateTaskRequestValidator>();
 builder.Services.AddScoped<IValidator<UpdateTaskRequest>, UpdateTaskRequestValidator>();
 builder.Services.AddScoped<IValidator<CategoryRequest>, CategoryRequestValidator>();
 
-builder.Services.AddScoped<AuthService>();
-builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
+builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<ITaskService, TaskService>();
 
@@ -70,6 +72,7 @@ app.UseHttpsRedirection();
 
 app.UseExceptionHandler();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();

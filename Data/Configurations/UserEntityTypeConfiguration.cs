@@ -10,6 +10,14 @@ public class UserEntityTypeConfiguration : IEntityTypeConfiguration<User>
   {
     builder
       .HasKey(u => u.Id);
+
+    builder.Property(u => u.AuthId)
+      .IsRequired()
+      .HasMaxLength(255);
+
+    builder
+      .HasIndex(u => u.AuthId)
+      .IsUnique();
     
     builder
       .Property(u => u.FirstName)
@@ -29,10 +37,5 @@ public class UserEntityTypeConfiguration : IEntityTypeConfiguration<User>
     builder
       .HasIndex(u => u.Email)
       .IsUnique();
-    
-    builder
-      .Property(u => u.PasswordHash)
-      .IsRequired()
-      .HasMaxLength(255);
   }
 }
