@@ -2,12 +2,28 @@ using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ToDoApi.Exceptions;
-
+/// <summary>
+/// Validation exception handler (FluentValidation).
+/// </summary>
+/// <remarks>
+/// Catches <see cref="FluentValidation.ValidationException"/>, sets the status to 400 Bad Request, 
+/// and returns error details in Problem Details format.
+/// </remarks>
 public sealed class ValidationExceptionHandler(
   IProblemDetailsService problemDetailsService,
   ILogger<GlobalExceptionHandler> logger
 ) : IExceptionHandler
 {
+  /// <summary>
+  /// Attempt to handle an exception if it is a validation error.
+  /// </summary>
+  /// <param name="httpContext">The context of the current HTTP request.</param>
+  /// <param name="exception">An exception occurred during query execution.</param>
+  /// <param name="cancellationToken">Transaction cancellation token.</param>
+  /// <returns>
+  /// <c>true</c> if the exception was handled (this is a ValidationException);
+  /// otherwise <c>false</c> to pass processing to the next Handler.
+  /// </returns>
   public async ValueTask<bool> TryHandleAsync(
     HttpContext httpContext, 
     Exception exception, 
