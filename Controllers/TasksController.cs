@@ -11,14 +11,21 @@ namespace ToDoApi.Controllers;
 public class TasksController(ITaskService service, IValidator<CreateTaskRequest> createValidator, IValidator<UpdateTaskRequest> updateValidator) : ControllerBase
 {
   [HttpGet]
-  public async Task<IActionResult> GetTasks() => Ok(await service.GetAll());
+  public async Task<ActionResult<IReadOnlyList<TaskResponse>>> GetTasks()
+  {
+    IReadOnlyList<TaskResponse> response = await service.GetAll();
+    return Ok(response);
+  }
 
   [HttpGet("{id:guid}")]
-  public async Task<IActionResult> GetTaskById(Guid id) =>
-    Ok(await service.GetById(id));
+  public async Task<ActionResult<TaskResponse>> GetTaskById(Guid id)
+  {
+    TaskResponse response = await service.GetById(id);
+    return Ok(response);
+  }
 
   [HttpPost]
-  public async Task<IActionResult> CreateTask(CreateTaskRequest request)
+  public async Task<ActionResult<TaskResponse>> CreateTask(CreateTaskRequest request)
   {
     await createValidator.ValidateAndThrowAsync(request);
 
@@ -27,7 +34,7 @@ public class TasksController(ITaskService service, IValidator<CreateTaskRequest>
   }
 
   [HttpPut("{id:guid}")]
-  public async Task<IActionResult> UpdateTask(Guid id, UpdateTaskRequest request)
+  public async Task<ActionResult> UpdateTask(Guid id, UpdateTaskRequest request)
   {
     await updateValidator.ValidateAndThrowAsync(request);
 
@@ -36,7 +43,7 @@ public class TasksController(ITaskService service, IValidator<CreateTaskRequest>
   }
 
   [HttpDelete("{id:guid}")]
-  public async Task<IActionResult> DeleteTask(Guid id)
+  public async Task<ActionResult> DeleteTask(Guid id)
   {
     await service.Delete(id);
     return NoContent();

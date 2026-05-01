@@ -12,14 +12,20 @@ namespace ToDoApi.Controllers;
 public class CategoriesController(ICategoryService service, IValidator<CategoryRequest> validator) : ControllerBase
 {
   [HttpGet]
-  public async Task<IActionResult> GetCategories() => Ok(await service.GetAll());
+  public async Task<ActionResult<IReadOnlyList<CategoryResponse>>> GetCategories() {
+    IReadOnlyList<CategoryResponse> response = await service.GetAll();
+    return Ok(response);
+  }
 
   [HttpGet("{id:guid}")]
-  public async Task<IActionResult> GetCategoryById(Guid id) =>
-    Ok(await service.GetById(id));
+  public async Task<ActionResult<CategoryResponse>> GetCategoryById(Guid id)
+  {
+    CategoryResponse response = await service.GetById(id);
+    return Ok(response);
+  }
 
   [HttpPost]
-  public async Task<IActionResult> CreateCategory(CategoryRequest request)
+  public async Task<ActionResult<CategoryResponse>> CreateCategory(CategoryRequest request)
   {
     await validator.ValidateAndThrowAsync(request);
     CategoryResponse createdCategory = await service.Create(request);
@@ -27,7 +33,7 @@ public class CategoriesController(ICategoryService service, IValidator<CategoryR
   }
 
   [HttpPut("{id:guid}")]
-  public async Task<IActionResult> UpdateCategory(Guid id, CategoryRequest request)
+  public async Task<ActionResult> UpdateCategory(Guid id, CategoryRequest request)
   {
     await validator.ValidateAndThrowAsync(request);
     await service.Update(id, request);
@@ -35,7 +41,7 @@ public class CategoriesController(ICategoryService service, IValidator<CategoryR
   }
 
   [HttpDelete("{id:guid}")]
-  public async Task<IActionResult> DeleteCategory(Guid id)
+  public async Task<ActionResult> DeleteCategory(Guid id)
   {
     await service.Delete(id);
     return NoContent();

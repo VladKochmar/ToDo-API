@@ -10,16 +10,12 @@ public class TaskService(AppDbContext context, IUserContext userContext) : ITask
 {
   public async Task<TaskResponse> Create(CreateTaskRequest request)
   {
-    string authId = userContext.AuthId();
-    Guid userId = await context.Users
-      .Where(u => u.AuthId == authId)
-      .Select(u => u.Id)
-      .FirstOrDefaultAsync();
+    Guid userId = await GetCurrentUserId();
 
     if (request.CategoryId is not null)
     {
       bool categoryExists = await context.Categories.AnyAsync(c => c.Id == request.CategoryId && c.UserId == userId);
-      if (!categoryExists) throw new NotFoundException("Category with the given ID was not found.");
+      if (!categoryExists) throw new NotFoundException(request.CategoryId.Value, "Category");
     }
 
     bool taskExists = await context.Tasks.AnyAsync(t => t.Title == request.Title && 
@@ -54,16 +50,8 @@ public class TaskService(AppDbContext context, IUserContext userContext) : ITask
 
   public async Task Delete(Guid id)
   {
-    string authId = userContext.AuthId();
-    Guid userId = await context.Users
-      .Where(u => u.AuthId == authId)
-      .Select(u => u.Id)
-      .FirstOrDefaultAsync();
-
-    TaskItem? taskItem = await context.Tasks.FirstOrDefaultAsync(t => t.Id == id && t.UserId == userId);
-    
-    if (taskItem is null)
-      throw new NotFoundException("Task with the given ID was not found.");
+    Guid userId = await GetCurrentUserId();
+    TaskItem taskItem = await GetTaskOrThrow(id, userId);
 
     context.Tasks.Remove(taskItem);
     await context.SaveChangesAsync();
@@ -71,11 +59,7 @@ public class TaskService(AppDbContext context, IUserContext userContext) : ITask
 
   public async Task<IReadOnlyList<TaskResponse>> GetAll()
   {
-    string authId = userContext.AuthId();
-    Guid userId = await context.Users
-      .Where(u => u.AuthId == authId)
-      .Select(u => u.Id)
-      .FirstOrDefaultAsync();
+    Guid userId = await GetCurrentUserId();
 
     List<TaskResponse> tasks = await context.Tasks
       .Where(t => t.UserId == userId)
@@ -94,16 +78,8 @@ public class TaskService(AppDbContext context, IUserContext userContext) : ITask
 
   public async Task<TaskResponse> GetById(Guid id)
   {
-    string authId = userContext.AuthId();
-    Guid userId = await context.Users
-      .Where(u => u.AuthId == authId)
-      .Select(u => u.Id)
-      .FirstOrDefaultAsync();
-
-    TaskItem? taskItem = await context.Tasks.FirstOrDefaultAsync(t => t.Id == id && t.UserId == userId);
-    
-    if (taskItem is null)
-      throw new NotFoundException("Task with the given ID was not found.");
+    Guid userId = await GetCurrentUserId();
+    TaskItem taskItem = await GetTaskOrThrow(id, userId);
 
     return new TaskResponse(
       taskItem.Id,
@@ -117,16 +93,8 @@ public class TaskService(AppDbContext context, IUserContext userContext) : ITask
 
   public async Task Update(Guid id, UpdateTaskRequest request)
   {
-    string authId = userContext.AuthId();
-    Guid userId = await context.Users
-      .Where(u => u.AuthId == authId)
-      .Select(u => u.Id)
-      .FirstOrDefaultAsync();
-
-    TaskItem? taskItem = await context.Tasks.FirstOrDefaultAsync(t => t.Id == id && t.UserId == userId);
-    
-    if (taskItem is null) 
-      throw new NotFoundException("Task with the given ID was not found.");
+    Guid userId = await GetCurrentUserId();
+    TaskItem taskItem = await GetTaskOrThrow(id, userId);
 
     if (taskItem.IsCompleted)
       throw new ConflictException("Task already completed.");
@@ -147,11 +115,33 @@ public class TaskService(AppDbContext context, IUserContext userContext) : ITask
       if (request.CategoryId.HasValue)
       {
         bool exists = await context.Categories.AnyAsync(c => c.Id == request.CategoryId && c.UserId == userId);
-        if (!exists) throw new NotFoundException("Category with the given ID was not found.");
+        if (!exists) throw new NotFoundException(request.CategoryId.Value, "Category");
       }
       taskItem.CategoryId = request.CategoryId;
     }
 
     await context.SaveChangesAsync();
+  }
+
+  private async Task<Guid> GetCurrentUserId()
+  {
+    string authId = userContext.AuthId();
+    Guid userId = await context.Users
+      .Where(u => u.AuthId == authId)
+      .Select(u => u.Id)
+      .FirstOrDefaultAsync();
+
+    return userId;
+  }
+
+  private async Task<TaskItem> GetTaskOrThrow(Guid taskId, Guid userId)
+  {
+    TaskItem? taskItem = await context.Tasks
+      .FirstOrDefaultAsync(t => t.Id == taskId && t.UserId == userId);
+    
+    if (taskItem is null)
+      throw new NotFoundException(taskId, "Task");
+
+    return taskItem;
   }
 }

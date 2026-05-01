@@ -11,7 +11,7 @@ namespace ToDoApi.Controllers;
 public class UsersController(IUserService service) : ControllerBase
 {
   [HttpPost]
-  public async Task<IActionResult> SyncUser()
+  public async Task<ActionResult<string>> SyncUser()
   {    
     string idToken = Request.Headers["x-id-token"].ToString();
     await service.SyncUser(idToken);

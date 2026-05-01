@@ -10,27 +10,15 @@ public class CategoryService(AppDbContext context, IUserContext userContext) : I
 {
   public async Task<CategoryResponse> GetById(Guid id)
   {
-    string authId = userContext.AuthId();
-    Guid userId = await context.Users
-      .Where(u => u.AuthId == authId)
-      .Select(u => u.Id)
-      .FirstOrDefaultAsync();
-
-    Category? category = await context.Categories.FirstOrDefaultAsync(c => c.Id == id && c.UserId == userId);
-    
-    if (category is null)
-      throw new NotFoundException("Category with the given ID was not found.");
+    Guid userId = await GetCurrentUserId();
+    Category category = await GetCategoryOrThrow(id, userId);
 
     return new CategoryResponse(category.Id, category.Title);
   }
 
   public async Task<IReadOnlyList<CategoryResponse>> GetAll()
   {
-    string authId = userContext.AuthId();
-    Guid userId = await context.Users
-      .Where(u => u.AuthId == authId)
-      .Select(u => u.Id)
-      .FirstOrDefaultAsync();
+    Guid userId = await GetCurrentUserId();
 
     List<CategoryResponse> categories = await context.Categories
       .Where(c => c.UserId == userId)
@@ -42,11 +30,7 @@ public class CategoryService(AppDbContext context, IUserContext userContext) : I
 
   public async Task<CategoryResponse> Create(CategoryRequest request)
   {
-    string authId = userContext.AuthId();
-    Guid userId = await context.Users
-      .Where(u => u.AuthId == authId)
-      .Select(u => u.Id)
-      .FirstOrDefaultAsync();
+    Guid userId = await GetCurrentUserId();
 
     bool exists = await context.Categories.AnyAsync(c => c.Title == request.Title && c.UserId == userId);
     
@@ -68,16 +52,8 @@ public class CategoryService(AppDbContext context, IUserContext userContext) : I
 
   public async Task Update(Guid id, CategoryRequest request)
   {
-    string authId = userContext.AuthId();
-    Guid userId = await context.Users
-      .Where(u => u.AuthId == authId)
-      .Select(u => u.Id)
-      .FirstOrDefaultAsync();
-
-    Category? category = await context.Categories.FirstOrDefaultAsync(c => c.Id == id && c.UserId == userId);
-    
-    if (category is null)
-      throw new NotFoundException("Category with the given ID was not found.");
+    Guid userId = await GetCurrentUserId();
+    Category category = await GetCategoryOrThrow(id, userId);
 
     bool exists = await context.Categories.AnyAsync(c => c.Title == request.Title && 
       c.UserId == userId && c.Id != id);
@@ -91,18 +67,33 @@ public class CategoryService(AppDbContext context, IUserContext userContext) : I
 
   public async Task Delete(Guid id)
   {
+    Guid userId = await GetCurrentUserId();
+    Category category = await GetCategoryOrThrow(id, userId);
+
+    context.Categories.Remove(category);
+    await context.SaveChangesAsync();
+  }
+
+  private async Task<Guid> GetCurrentUserId()
+  {
     string authId = userContext.AuthId();
+    
     Guid userId = await context.Users
       .Where(u => u.AuthId == authId)
       .Select(u => u.Id)
       .FirstOrDefaultAsync();
-    
-    Category? category = await context.Categories.FirstOrDefaultAsync(c => c.Id == id && c.UserId == userId);
-    
-    if (category is null)
-      throw new NotFoundException("Category with the given ID was not found.");
 
-    context.Categories.Remove(category);
-    await context.SaveChangesAsync();
+    return userId;
+  }
+  
+  private async Task<Category> GetCategoryOrThrow(Guid categoryId, Guid userId)
+  {
+    Category? category = await context.Categories
+      .FirstOrDefaultAsync(c => c.Id == categoryId && c.UserId == userId);
+
+    if (category is null)
+      throw new NotFoundException(categoryId, "Category");
+
+    return category;
   }
 }
