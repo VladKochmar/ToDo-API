@@ -6,12 +6,10 @@ using ToDoApi.Models.Entities;
 
 namespace ToDoApi.Services;
 
-public class TaskService(AppDbContext context, IUserContext userContext) : ITaskService
+public class TaskService(AppDbContext context) : ITaskService
 {
-  public async Task<TaskResponse> Create(CreateTaskRequest request)
+  public async Task<TaskResponse> Create(Guid userId, CreateTaskRequest request)
   {
-    Guid userId = await GetCurrentUserId();
-
     if (request.CategoryId is not null)
     {
       bool categoryExists = await context.Categories.AnyAsync(c => c.Id == request.CategoryId && c.UserId == userId);
@@ -48,19 +46,16 @@ public class TaskService(AppDbContext context, IUserContext userContext) : ITask
     );
   }
 
-  public async Task Delete(Guid id)
+  public async Task Delete(Guid id, Guid userId)
   {
-    Guid userId = await GetCurrentUserId();
     TaskItem taskItem = await GetTaskOrThrow(id, userId);
 
     context.Tasks.Remove(taskItem);
     await context.SaveChangesAsync();
   }
 
-  public async Task<IReadOnlyList<TaskResponse>> GetAll()
+  public async Task<IReadOnlyList<TaskResponse>> GetAll(Guid userId)
   {
-    Guid userId = await GetCurrentUserId();
-
     List<TaskResponse> tasks = await context.Tasks
       .Where(t => t.UserId == userId)
       .Select(t => new TaskResponse(
@@ -76,9 +71,8 @@ public class TaskService(AppDbContext context, IUserContext userContext) : ITask
     return tasks;
   }
 
-  public async Task<TaskResponse> GetById(Guid id)
+  public async Task<TaskResponse> GetById(Guid id, Guid userId)
   {
-    Guid userId = await GetCurrentUserId();
     TaskItem taskItem = await GetTaskOrThrow(id, userId);
 
     return new TaskResponse(
@@ -91,9 +85,8 @@ public class TaskService(AppDbContext context, IUserContext userContext) : ITask
     );
   }
 
-  public async Task Update(Guid id, UpdateTaskRequest request)
+  public async Task Update(Guid id, Guid userId, UpdateTaskRequest request)
   {
-    Guid userId = await GetCurrentUserId();
     TaskItem taskItem = await GetTaskOrThrow(id, userId);
 
     if (taskItem.IsCompleted)
@@ -121,17 +114,6 @@ public class TaskService(AppDbContext context, IUserContext userContext) : ITask
     }
 
     await context.SaveChangesAsync();
-  }
-
-  private async Task<Guid> GetCurrentUserId()
-  {
-    string authId = userContext.AuthId();
-    Guid userId = await context.Users
-      .Where(u => u.AuthId == authId)
-      .Select(u => u.Id)
-      .FirstOrDefaultAsync();
-
-    return userId;
   }
 
   private async Task<TaskItem> GetTaskOrThrow(Guid taskId, Guid userId)

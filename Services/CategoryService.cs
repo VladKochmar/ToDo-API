@@ -6,20 +6,16 @@ using ToDoApi.Models.Entities;
 
 namespace ToDoApi.Services;
 
-public class CategoryService(AppDbContext context, IUserContext userContext) : ICategoryService
+public class CategoryService(AppDbContext context) : ICategoryService
 {
-  public async Task<CategoryResponse> GetById(Guid id)
+  public async Task<CategoryResponse> GetById(Guid id, Guid userId)
   {
-    Guid userId = await GetCurrentUserId();
     Category category = await GetCategoryOrThrow(id, userId);
-
     return new CategoryResponse(category.Id, category.Title);
   }
 
-  public async Task<IReadOnlyList<CategoryResponse>> GetAll()
+  public async Task<IReadOnlyList<CategoryResponse>> GetAll(Guid userId)
   {
-    Guid userId = await GetCurrentUserId();
-
     List<CategoryResponse> categories = await context.Categories
       .Where(c => c.UserId == userId)
       .Select(c => new CategoryResponse(c.Id, c.Title))
@@ -28,10 +24,8 @@ public class CategoryService(AppDbContext context, IUserContext userContext) : I
     return categories;
   }
 
-  public async Task<CategoryResponse> Create(CategoryRequest request)
+  public async Task<CategoryResponse> Create(Guid userId, CategoryRequest request)
   {
-    Guid userId = await GetCurrentUserId();
-
     bool exists = await context.Categories.AnyAsync(c => c.Title == request.Title && c.UserId == userId);
     
     if (exists)
@@ -50,9 +44,8 @@ public class CategoryService(AppDbContext context, IUserContext userContext) : I
     return new CategoryResponse(newCategory.Id, newCategory.Title);
   }
 
-  public async Task Update(Guid id, CategoryRequest request)
+  public async Task Update(Guid id, Guid userId, CategoryRequest request)
   {
-    Guid userId = await GetCurrentUserId();
     Category category = await GetCategoryOrThrow(id, userId);
 
     bool exists = await context.Categories.AnyAsync(c => c.Title == request.Title && 
@@ -65,27 +58,14 @@ public class CategoryService(AppDbContext context, IUserContext userContext) : I
     await context.SaveChangesAsync();
   }
 
-  public async Task Delete(Guid id)
+  public async Task Delete(Guid id, Guid userId)
   {
-    Guid userId = await GetCurrentUserId();
     Category category = await GetCategoryOrThrow(id, userId);
 
     context.Categories.Remove(category);
     await context.SaveChangesAsync();
   }
 
-  private async Task<Guid> GetCurrentUserId()
-  {
-    string authId = userContext.AuthId();
-    
-    Guid userId = await context.Users
-      .Where(u => u.AuthId == authId)
-      .Select(u => u.Id)
-      .FirstOrDefaultAsync();
-
-    return userId;
-  }
-  
   private async Task<Category> GetCategoryOrThrow(Guid categoryId, Guid userId)
   {
     Category? category = await context.Categories

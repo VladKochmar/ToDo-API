@@ -2,11 +2,13 @@ namespace ToDoApi.Services;
 public interface IUserContext
 {
   /// <summary>
-  /// Gets the unique identifier (Subject ID) of the currently authorized user.
+  /// Gets internal application user identifier (UUID) associated with the currently authorized user.
   /// </summary>
-  /// <returns>A string with the user ID from claims (NameIdentifier).</returns>
+  /// <returns>
+  /// A <see cref="Guid"/> representing the application's internal user ID.
+  /// </returns>
   /// <exception cref="UnauthorizedAccessException">
-  /// Occurs if the user is not authorized or their token lacks the required claim <see cref="ClaimTypes.NameIdentifier"/>.
+  /// Thrown when no matching user is found in the database for the current authentication context.
   /// </exception>
-  string AuthId();
+  Task<Guid> UserId();
 };
