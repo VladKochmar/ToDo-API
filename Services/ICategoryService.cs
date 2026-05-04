@@ -1,4 +1,5 @@
 using ToDoApi.Models.DTOs;
+using ToDoApi.Exceptions;
 
 namespace ToDoApi.Services;
 

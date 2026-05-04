@@ -10,11 +10,7 @@ public class TaskService(AppDbContext context) : ITaskService
 {
   public async Task<TaskResponse> Create(Guid userId, CreateTaskRequest request)
   {
-    if (request.CategoryId is not null)
-    {
-      bool categoryExists = await context.Categories.AnyAsync(c => c.Id == request.CategoryId && c.UserId == userId);
-      if (!categoryExists) throw new NotFoundException(request.CategoryId.Value, "Category");
-    }
+    await VerifyCategoryById(request.CategoryId, userId);
 
     bool taskExists = await context.Tasks.AnyAsync(t => t.Title == request.Title && 
       t.CategoryId == request.CategoryId && t.UserId == userId);
@@ -71,6 +67,24 @@ public class TaskService(AppDbContext context) : ITaskService
     return tasks;
   }
 
+  public async Task<IReadOnlyList<TaskResponse>> GetAllByCategory(Guid categoryId, Guid userId)
+  {
+    await VerifyCategoryById(categoryId, userId);
+    List<TaskResponse> tasks = await context.Tasks
+      .Where(t => t.UserId == userId && t.CategoryId == categoryId)
+      .Select(t => new TaskResponse(
+        t.Id,
+        t.Title,
+        t.IsCompleted,
+        t.Description,
+        t.Category != null ? t.Category.Title : null,
+        t.DueDate
+      ))
+      .ToListAsync();
+
+    return tasks;
+  }
+
   public async Task<TaskResponse> GetById(Guid id, Guid userId)
   {
     TaskItem taskItem = await GetTaskOrThrow(id, userId);
@@ -105,15 +119,19 @@ public class TaskService(AppDbContext context) : ITaskService
 
     if (taskItem.CategoryId != request.CategoryId)
     {
-      if (request.CategoryId.HasValue)
-      {
-        bool exists = await context.Categories.AnyAsync(c => c.Id == request.CategoryId && c.UserId == userId);
-        if (!exists) throw new NotFoundException(request.CategoryId.Value, "Category");
-      }
+      await VerifyCategoryById(request.CategoryId, userId);
       taskItem.CategoryId = request.CategoryId;
     }
 
     await context.SaveChangesAsync();
+  }
+
+  private async Task VerifyCategoryById(Guid? categoryId, Guid userId)
+  {
+    if (!categoryId.HasValue) return;
+
+    bool exists = await context.Categories.AnyAsync(c => c.Id == categoryId.Value && c.UserId == userId);
+    if (!exists) throw new NotFoundException(categoryId.Value, "Category");
   }
 
   private async Task<TaskItem> GetTaskOrThrow(Guid taskId, Guid userId)

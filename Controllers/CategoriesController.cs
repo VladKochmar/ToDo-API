@@ -8,7 +8,7 @@ namespace ToDoApi.Controllers;
 
 [Authorize]
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/v1/categories")]
 public class CategoriesController(
   ICategoryService service, 
   IUserContext userContext, 

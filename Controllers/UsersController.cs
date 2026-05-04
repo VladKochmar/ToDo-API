@@ -7,14 +7,14 @@ namespace ToDoApi.Controllers;
 
 [Authorize]
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/v1/users")]
 public class UsersController(IUserService service) : ControllerBase
 {
   [HttpPost]
-  public async Task<ActionResult<string>> SyncUser()
+  public async Task<IActionResult> SyncUser()
   {    
     string idToken = Request.Headers["x-id-token"].ToString();
     await service.SyncUser(idToken);
-    return Ok("User synced successfully.");
+    return Ok(new { message = "User synced successfully." });
   }
 }

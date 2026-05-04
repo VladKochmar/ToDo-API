@@ -12,12 +12,8 @@ public sealed class CreateUserRequestValidator : AbstractValidator<CreateUserReq
       .EmailAddress()
       .MaximumLength(255);
 
-    RuleFor(x => x.FirstName)
+    RuleFor(x => x.FullName)
       .NotEmpty()
-      .MaximumLength(100);
-
-    RuleFor(x => x.LastName)
-      .NotEmpty()
-      .MaximumLength(100);
+      .MaximumLength(255);
   }
 }

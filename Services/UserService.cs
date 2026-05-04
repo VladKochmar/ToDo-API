@@ -20,8 +20,7 @@ public class UserService(AppDbContext context, IValidator<CreateUserRequest> val
     string sub = token.Subject;
     CreateUserRequest request = new (
       token.Claims.FirstOrDefault(c => c.Type == "email")?.Value ?? string.Empty,
-      token.Claims.FirstOrDefault(c => c.Type == "given_name")?.Value ?? string.Empty,
-      token.Claims.FirstOrDefault(c => c.Type == "family_name")?.Value ?? string.Empty
+      token.Claims.FirstOrDefault(c => c.Type == "name")?.Value ?? string.Empty
     );
 
     await validator.ValidateAndThrowAsync(request);
@@ -35,15 +34,13 @@ public class UserService(AppDbContext context, IValidator<CreateUserRequest> val
         Id = Guid.CreateVersion7(),
         AuthId = sub,
         Email = request.Email,
-        FirstName = request.FirstName,
-        LastName = request.LastName
+        FullName = request.FullName,
       });
     } 
     else
     {
       user.Email = request.Email;
-      user.FirstName = request.FirstName;
-      user.LastName = request.LastName;
+      user.FullName = request.FullName;
     }
 
     await context.SaveChangesAsync();

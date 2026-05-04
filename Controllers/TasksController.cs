@@ -8,7 +8,7 @@ namespace ToDoApi.Controllers;
 
 [Authorize]
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/v1")]
 public class TasksController(
   ITaskService service, 
   IUserContext userContext,
@@ -16,7 +16,7 @@ public class TasksController(
   IValidator<UpdateTaskRequest> updateValidator
 ) : ControllerBase
 {
-  [HttpGet]
+  [HttpGet("tasks")]
   public async Task<ActionResult<IReadOnlyList<TaskResponse>>> GetTasks()
   {
     Guid userId = await userContext.UserId();
@@ -24,7 +24,15 @@ public class TasksController(
     return Ok(response);
   }
 
-  [HttpGet("{id:guid}")]
+  [HttpGet("categories/{id:guid}/tasks")]
+  public async Task<ActionResult<IReadOnlyList<TaskResponse>>> GetTasksByCategory(Guid id)
+  {
+    Guid userId = await userContext.UserId();
+    IReadOnlyList<TaskResponse> response = await service.GetAllByCategory(id, userId);
+    return Ok(response);
+  }
+
+  [HttpGet("tasks/{id:guid}")]
   public async Task<ActionResult<TaskResponse>> GetTaskById(Guid id)
   {
     Guid userId = await userContext.UserId();
@@ -32,7 +40,7 @@ public class TasksController(
     return Ok(response);
   }
 
-  [HttpPost]
+  [HttpPost("tasks")]
   public async Task<ActionResult<TaskResponse>> CreateTask(CreateTaskRequest request)
   {
     Guid userId = await userContext.UserId();
@@ -42,7 +50,7 @@ public class TasksController(
     return CreatedAtAction(nameof(GetTaskById), new { id = createdTask.Id }, createdTask);
   }
 
-  [HttpPut("{id:guid}")]
+  [HttpPut("tasks/{id:guid}")]
   public async Task<ActionResult> UpdateTask(Guid id, UpdateTaskRequest request)
   {
     Guid userId = await userContext.UserId();
@@ -52,7 +60,7 @@ public class TasksController(
     return NoContent();
   }
 
-  [HttpDelete("{id:guid}")]
+  [HttpDelete("tasks/{id:guid}")]
   public async Task<ActionResult> DeleteTask(Guid id)
   {
     Guid userId = await userContext.UserId();

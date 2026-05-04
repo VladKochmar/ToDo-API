@@ -1,17 +1,33 @@
+using System.Reflection;
 using FluentValidation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using Scalar.AspNetCore;
 using ToDoApi.Data;
 using ToDoApi.Exceptions;
 using ToDoApi.Models.DTOs;
 using ToDoApi.Services;
 using ToDoApi.Validations;
 
+string ToDoSpecificOrigins = "ToDoSpecificOrigins";
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddProblemDetails();
+
+string[]? origins = builder.Configuration.GetSection("AllowedOrigins").Get<string[]>();
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(name: ToDoSpecificOrigins,
+        policy =>
+        {
+            policy.WithOrigins(origins!)
+                .AllowAnyMethod()
+                .WithHeaders("x-id-token", "content-type", "authorization");
+        }
+    );
+});
 
 builder.Services.AddExceptionHandler<ValidationExceptionHandler>();
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
@@ -43,6 +59,13 @@ builder.Services.AddAuthentication(options =>
 
 builder.Services.AddControllers();
 
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen(options =>
+{
+    var xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+    options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFilename));
+});
+
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<IUserContext, UserContext>();
 
@@ -65,12 +88,18 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
-    app.MapScalarApiReference();
+    app.UseSwagger();
+    app.UseSwaggerUI(options =>
+    {
+        options.SwaggerEndpoint("/swagger/v1/swagger.json", "ToDo API v1");
+    });
 }
 
 app.UseHttpsRedirection();
 
 app.UseExceptionHandler();
+
+app.UseCors(ToDoSpecificOrigins);
 
 app.UseAuthentication();
 app.UseAuthorization();

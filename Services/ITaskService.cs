@@ -1,4 +1,8 @@
-namespace ToDoApi.Models.DTOs;
+using ToDoApi.Models.Entities;
+using ToDoApi.Models.DTOs;
+using ToDoApi.Exceptions;
+
+namespace ToDoApi.Services;
 
 public interface ITaskService
 {
@@ -25,6 +29,21 @@ public interface ITaskService
   /// If there are no tasks, an empty list is returned.
   /// </returns>
   public Task<IReadOnlyList<TaskResponse>> GetAll(Guid userId);
+
+  /// <summary>
+  /// Gets sorted by category list of tasks owned by the currently logged in user.
+  /// </summary>
+  /// <param name="categoryId">The unique identifier (GUID) of selected category.</param>
+  /// <param name="userId">The unique identifier (GUID) of the currently authorized user.</param>
+  /// <returns>
+  /// A read-only list of <see cref="TaskResponse"/> objects.
+  /// If there are no tasks, an empty list is returned.
+  /// </returns>
+  /// <exception cref="NotFoundException">
+  /// Occurs if the category with the specified <paramref name="categoryId"/> is not found
+  /// or does not belong to the currently authorized user.
+  /// </exception>
+  public Task<IReadOnlyList<TaskResponse>> GetAllByCategory(Guid categoryId, Guid userId);
 
   /// <summary>
   /// Creates a new task for the current user.
