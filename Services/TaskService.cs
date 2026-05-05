@@ -38,6 +38,7 @@ public class TaskService(AppDbContext context) : ITaskService
       newTask.IsCompleted,
       newTask.Description,
       newTask.Category?.Title,
+      newTask.Category?.Id,
       newTask.DueDate
     );
   }
@@ -60,6 +61,7 @@ public class TaskService(AppDbContext context) : ITaskService
         t.IsCompleted,
         t.Description,
         t.Category != null ? t.Category.Title : null,
+        t.Category != null ? t.Category.Id : null,
         t.DueDate
       ))
       .ToListAsync();
@@ -78,6 +80,7 @@ public class TaskService(AppDbContext context) : ITaskService
         t.IsCompleted,
         t.Description,
         t.Category != null ? t.Category.Title : null,
+        t.Category != null ? t.Category.Id : null,
         t.DueDate
       ))
       .ToListAsync();
@@ -95,6 +98,7 @@ public class TaskService(AppDbContext context) : ITaskService
       taskItem.IsCompleted,
       taskItem.Description,
       taskItem.Category?.Title,
+      taskItem.Category?.Id,
       taskItem.DueDate
     );
   }

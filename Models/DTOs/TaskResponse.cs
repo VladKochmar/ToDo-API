@@ -6,5 +6,6 @@ public sealed record TaskResponse(
   bool IsCompleted,
   string? Description,
   string? CategoryName,
+  Guid? CategoryId,
   DateTimeOffset? DueDate
 );
