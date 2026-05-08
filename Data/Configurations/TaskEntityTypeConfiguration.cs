@@ -21,10 +21,6 @@ public class TaskEntityTypeConfiguration : IEntityTypeConfiguration<TaskItem>
       .HasDefaultValue(false);
 
     builder
-      .Property(t => t.CreatedAt)
-      .HasDefaultValueSql("NOW()");
-
-    builder
       .HasOne(t => t.User)
       .WithMany(u => u.Tasks)
       .HasForeignKey(t => t.UserId)

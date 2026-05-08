@@ -8,7 +8,7 @@ public class TaskItem
   
   public string? Description { get; set; }
   public DateTimeOffset? DueDate { get; set; }
-  public required DateTimeOffset CreatedAt { get; init; }
+  public required DateTimeOffset CreatedAt { get; init; } = DateTimeOffset.UtcNow;
   
   public required Guid UserId { get; set; }
   public User User { get; set; } = null!;
