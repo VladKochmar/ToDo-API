@@ -34,7 +34,7 @@ public class CategoryService(AppDbContext context) : ICategoryService
     Category newCategory = new ()
     {
       Id = Guid.CreateVersion7(),
-      Title = request.Title,
+      Title = request.Title.Trim(),
       UserId = userId
     };
 
@@ -54,7 +54,7 @@ public class CategoryService(AppDbContext context) : ICategoryService
     if (exists)
       throw new ConflictException($"Category '{request.Title}' already exists.");
 
-    category.Title = request.Title;
+    category.Title = request.Title.Trim();
     await context.SaveChangesAsync();
   }
 

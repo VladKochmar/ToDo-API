@@ -32,15 +32,7 @@ public class TaskService(AppDbContext context) : ITaskService
     context.Tasks.Add(newTask);
     await context.SaveChangesAsync();
 
-    return new TaskResponse(
-      newTask.Id,
-      newTask.Title,
-      newTask.IsCompleted,
-      newTask.Description,
-      newTask.Category?.Title,
-      newTask.Category?.Id,
-      newTask.DueDate
-    );
+    return await GetById(newTask.Id, userId);
   }
 
   public async Task Delete(Guid id, Guid userId)
@@ -141,6 +133,7 @@ public class TaskService(AppDbContext context) : ITaskService
   private async Task<TaskItem> GetTaskOrThrow(Guid taskId, Guid userId)
   {
     TaskItem? taskItem = await context.Tasks
+      .Include(t => t.Category)
       .FirstOrDefaultAsync(t => t.Id == taskId && t.UserId == userId);
     
     if (taskItem is null)
