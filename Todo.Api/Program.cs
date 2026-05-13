@@ -1,8 +1,12 @@
 using System.Reflection;
+
+using Npgsql;
 using FluentValidation;
+
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+
 using Todo.Api.Data;
 using Todo.Api.Exceptions;
 using Todo.Api.Models.DTOs;
@@ -32,10 +36,23 @@ builder.Services.AddCors(options =>
 builder.Services.AddExceptionHandler<ValidationExceptionHandler>();
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 
+IConfigurationSection dbConnectionConfigs = builder.Configuration.GetSection("DbConnection");
+
+NpgsqlConnectionStringBuilder connectionStringBuilder = new()
+{
+    Host = dbConnectionConfigs["Host"],
+    Port = int.Parse(dbConnectionConfigs["Port"] ?? "5432"),
+    Database = dbConnectionConfigs["Database"],
+    Username = dbConnectionConfigs["Username"],
+    Password = dbConnectionConfigs["Password"]
+};
+
+string connectionString = connectionStringBuilder.ConnectionString;
+
 builder.Services.AddDbContext<AppDbContext>(options =>
 {
     options
-        .UseNpgsql(builder.Configuration["DbConnectionString"])
+        .UseNpgsql(connectionString)
         .UseSnakeCaseNamingConvention();
 });
 
@@ -53,7 +70,25 @@ builder.Services.AddAuthentication(options =>
             ValidateIssuer = true,
             ValidateAudience = true,
             ValidateLifetime = true,
-            ValidTypes = ["at+jwt", "JWT"]
+            ValidateIssuerSigningKey = true,
+            ValidTypes = ["at+jwt", "JWT"],
+            ClockSkew = TimeSpan.Zero
+        };
+
+        options.Events = new JwtBearerEvents
+        {
+            OnTokenValidated = context =>
+            {
+                string expectedClientId = builder.Configuration["Auth0:ClientId"]!;
+                string? obtainedClientId = context.Principal?.FindFirst("client_id")?.Value;
+
+                if (obtainedClientId is null || obtainedClientId != expectedClientId)
+                {
+                    context.Fail("Invalid client_id.");
+                }
+
+                return Task.CompletedTask;
+            }
         };
     });
 
