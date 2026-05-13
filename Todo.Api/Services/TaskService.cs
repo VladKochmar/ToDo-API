@@ -46,6 +46,7 @@ public class TaskService(AppDbContext context) : ITaskService
   public async Task<IReadOnlyList<TaskResponse>> GetAll(Guid userId)
   {
     List<TaskResponse> tasks = await context.Tasks
+      .AsNoTracking()
       .Where(t => t.UserId == userId)
       .Select(t => new TaskResponse(
         t.Id,
@@ -65,6 +66,7 @@ public class TaskService(AppDbContext context) : ITaskService
   {
     await VerifyCategoryById(categoryId, userId);
     List<TaskResponse> tasks = await context.Tasks
+      .AsNoTracking()
       .Where(t => t.UserId == userId && t.CategoryId == categoryId)
       .Select(t => new TaskResponse(
         t.Id,
@@ -133,6 +135,7 @@ public class TaskService(AppDbContext context) : ITaskService
   private async Task<TaskItem> GetTaskOrThrow(Guid taskId, Guid userId)
   {
     TaskItem? taskItem = await context.Tasks
+      .AsNoTracking()
       .Include(t => t.Category)
       .FirstOrDefaultAsync(t => t.Id == taskId && t.UserId == userId);
     

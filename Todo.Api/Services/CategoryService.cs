@@ -17,6 +17,7 @@ public class CategoryService(AppDbContext context) : ICategoryService
   public async Task<IReadOnlyList<CategoryResponse>> GetAll(Guid userId)
   {
     List<CategoryResponse> categories = await context.Categories
+      .AsNoTracking()
       .Where(c => c.UserId == userId)
       .Select(c => new CategoryResponse(c.Id, c.Title))
       .ToListAsync();
@@ -69,6 +70,7 @@ public class CategoryService(AppDbContext context) : ICategoryService
   private async Task<Category> GetCategoryOrThrow(Guid categoryId, Guid userId)
   {
     Category? category = await context.Categories
+      .AsNoTracking()
       .FirstOrDefaultAsync(c => c.Id == categoryId && c.UserId == userId);
 
     if (category is null)

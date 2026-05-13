@@ -23,6 +23,7 @@ public class UserContext(IHttpContextAccessor accessor, AppDbContext context) : 
   {
     string authId = AuthId();
     Guid userId = await context.Users
+      .AsNoTracking()
       .Where(u => u.AuthId == authId)
       .Select(u => u.Id)
       .FirstOrDefaultAsync();
