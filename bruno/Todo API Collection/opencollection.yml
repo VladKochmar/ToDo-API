@@ -1,0 +1,47 @@
+opencollection: 1.0.0
+
+info:
+  name: Todo API Collection
+config:
+  proxy:
+    inherit: true
+    config:
+      protocol: http
+      hostname: ""
+      port: ""
+      auth:
+        username: ""
+        password: ""
+      bypassProxy: ""
+
+request:
+  auth:
+    type: oauth2
+    flow: authorization_code
+    authorizationUrl: https://dev-5m4sekbji4ve6y6c.us.auth0.com/authorize
+    accessTokenUrl: https://dev-5m4sekbji4ve6y6c.us.auth0.com/oauth/token
+    credentials:
+      clientId: Y3DoAlPKO8YYfPQ9MMtWJH5wEUdYnr1c
+      clientSecret: "{{process.env.AUTH0_CLIENT_SECRET}}"
+      placement: body
+    additionalParameters:
+      authorizationRequest:
+        - name: audience
+          placement: query
+          value: https://todo-api.com
+    scope: openid profile email
+    pkce: {}
+    tokenConfig:
+      id: credentials
+      placement:
+        header: Bearer
+      source: access_token
+    settings:
+      autoFetchToken: true
+      autoRefreshToken: false
+bundled: false
+extensions:
+  bruno:
+    ignore:
+      - node_modules
+      - .git

@@ -1,0 +1,25 @@
+info:
+  name: Update Task
+  type: http
+  seq: 12
+
+http:
+  method: PUT
+  url: http://localhost:5212/api/v1/tasks/019e276b-31b3-76fc-84f5-bdb0025922ef
+  body:
+    type: json
+    data: |-
+      {
+        "title": "Test Todo Api",
+        "isCompleted": true,
+        "description": null,
+        "dueDate": "2026-05-16T17:06:32.193Z",
+        "categoryId": "019e2763-bcd5-7015-816f-5a3b863cd44d"
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

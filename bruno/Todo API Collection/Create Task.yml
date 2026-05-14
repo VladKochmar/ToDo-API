@@ -1,0 +1,24 @@
+info:
+  name: Create Task
+  type: http
+  seq: 4
+
+http:
+  method: POST
+  url: http://localhost:5212/api/v1/tasks
+  body:
+    type: json
+    data: |-
+      {
+        "title": "Test C# App",
+        "description": null,
+        "dueDate": "2026-05-15T16:55:26.274Z",
+        "categoryId": "019e2763-bcd5-7015-816f-5a3b863cd44d"
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
