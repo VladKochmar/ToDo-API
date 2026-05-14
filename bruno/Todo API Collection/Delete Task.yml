@@ -1,0 +1,15 @@
+info:
+  name: Delete Task
+  type: http
+  seq: 11
+
+http:
+  method: DELETE
+  url: http://localhost:5212/api/v1/tasks/019e2769-d53b-74af-91a4-a400f69df177
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

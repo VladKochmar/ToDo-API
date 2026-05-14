@@ -1,0 +1,15 @@
+info:
+  name: Delete Category
+  type: http
+  seq: 9
+
+http:
+  method: DELETE
+  url: http://localhost:5212/api/v1/categories/019e2764-3930-726d-bd0f-4864c368581c
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

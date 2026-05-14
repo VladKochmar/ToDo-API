@@ -1,0 +1,18 @@
+info:
+  name: Login
+  type: http
+  seq: 2
+
+http:
+  method: POST
+  url: http://localhost:5212/api/v1/users
+  headers:
+    - name: x-id-token
+      value: "{{$oauth2.credentials.id_token}}"
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
