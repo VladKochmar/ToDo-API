@@ -135,7 +135,6 @@ public class TaskService(AppDbContext context) : ITaskService
   private async Task<TaskItem> GetTaskOrThrow(Guid taskId, Guid userId)
   {
     TaskItem? taskItem = await context.Tasks
-      .AsNoTracking()
       .Include(t => t.Category)
       .FirstOrDefaultAsync(t => t.Id == taskId && t.UserId == userId);
     

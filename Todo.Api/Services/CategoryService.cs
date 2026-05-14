@@ -70,7 +70,6 @@ public class CategoryService(AppDbContext context) : ICategoryService
   private async Task<Category> GetCategoryOrThrow(Guid categoryId, Guid userId)
   {
     Category? category = await context.Categories
-      .AsNoTracking()
       .FirstOrDefaultAsync(c => c.Id == categoryId && c.UserId == userId);
 
     if (category is null)
