@@ -2,7 +2,7 @@
 
 #nullable disable
 
-namespace ToDoApi.Migrations
+namespace Todo.Api.Migrations.App
 {
     /// <inheritdoc />
     public partial class ReplaceLastNameWithFullName : Migration

@@ -94,6 +94,20 @@ Verify container status:
 docker ps
 ```
 
+Connect to a specific database:
+
+```bash
+docker exec -it todo-postgres psql -U your_user -d your_database
+```
+
+Print list of relations:
+
+```bash
+docker exec -it todo-postgres psql -U your_user -d your_database
+
+\dt
+```
+
 ---
 
 ## EF Core Migrations
@@ -101,13 +115,19 @@ docker ps
 Add migration:
 
 ```bash
-dotnet ef migrations add MigrationName --project Todo.Api
+dotnet ef migrations add MigrationName --context YourContext --project Todo.Api --out-dir Migrations/YourContext
 ```
 
 Apply migration:
 
 ```bash
-dotnet ef database update --project Todo.Api
+dotnet ef database update --context YourContext --project Todo.Api
+```
+
+Print migrations:
+
+```bash
+dotnet ef migrations list --context YourContext --project Todo.Api
 ```
 
 ---

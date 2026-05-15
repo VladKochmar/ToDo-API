@@ -9,11 +9,11 @@ using Todo.Api.Data;
 
 #nullable disable
 
-namespace ToDoApi.Migrations
+namespace Todo.Api.Migrations.App
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260504131141_ReplaceLastNameWithFullName")]
-    partial class ReplaceLastNameWithFullName
+    [Migration("20260426163001_SwitchToExternalAuth")]
+    partial class SwitchToExternalAuth
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -126,11 +126,17 @@ namespace ToDoApi.Migrations
                         .HasColumnType("character varying(255)")
                         .HasColumnName("email");
 
-                    b.Property<string>("FullName")
+                    b.Property<string>("FirstName")
                         .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("character varying(255)")
-                        .HasColumnName("full_name");
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("first_name");
+
+                    b.Property<string>("LastName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("last_name");
 
                     b.HasKey("Id")
                         .HasName("pk_users");

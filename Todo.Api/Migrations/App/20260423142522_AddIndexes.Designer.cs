@@ -9,11 +9,11 @@ using Todo.Api.Data;
 
 #nullable disable
 
-namespace ToDoApi.Migrations
+namespace Todo.Api.Migrations.App
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260421072206_AddRefreshToken")]
-    partial class AddRefreshToken
+    [Migration("20260423142522_AddIndexes")]
+    partial class AddIndexes
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -46,7 +46,7 @@ namespace ToDoApi.Migrations
                         .HasName("pk_categories");
 
                     b.HasIndex("UserId")
-                        .HasDatabaseName("ix_categories_user_id");
+                        .HasDatabaseName("idx_categories_user_id");
 
                     b.ToTable("categories", (string)null);
                 });
@@ -98,8 +98,11 @@ namespace ToDoApi.Migrations
                     b.HasIndex("CategoryId")
                         .HasDatabaseName("ix_tasks_category_id");
 
-                    b.HasIndex("UserId")
-                        .HasDatabaseName("ix_tasks_user_id");
+                    b.HasIndex("DueDate")
+                        .HasDatabaseName("idx_tasks_user_due");
+
+                    b.HasIndex("UserId", "CategoryId", "DueDate")
+                        .HasDatabaseName("idx_tasks__user_category_due");
 
                     b.ToTable("tasks", (string)null);
                 });
