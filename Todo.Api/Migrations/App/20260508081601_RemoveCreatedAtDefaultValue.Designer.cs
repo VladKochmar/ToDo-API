@@ -9,7 +9,7 @@ using Todo.Api.Data;
 
 #nullable disable
 
-namespace ToDoApi.Migrations
+namespace Todo.Api.Migrations.App
 {
     [DbContext(typeof(AppDbContext))]
     [Migration("20260508081601_RemoveCreatedAtDefaultValue")]

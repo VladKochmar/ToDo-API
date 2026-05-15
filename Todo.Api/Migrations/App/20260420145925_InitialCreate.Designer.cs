@@ -9,11 +9,11 @@ using Todo.Api.Data;
 
 #nullable disable
 
-namespace ToDoApi.Migrations
+namespace Todo.Api.Migrations.App
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260426163001_SwitchToExternalAuth")]
-    partial class SwitchToExternalAuth
+    [Migration("20260420145925_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -46,7 +46,7 @@ namespace ToDoApi.Migrations
                         .HasName("pk_categories");
 
                     b.HasIndex("UserId")
-                        .HasDatabaseName("idx_categories_user_id");
+                        .HasDatabaseName("ix_categories_user_id");
 
                     b.ToTable("categories", (string)null);
                 });
@@ -98,11 +98,8 @@ namespace ToDoApi.Migrations
                     b.HasIndex("CategoryId")
                         .HasDatabaseName("ix_tasks_category_id");
 
-                    b.HasIndex("DueDate")
-                        .HasDatabaseName("idx_tasks_user_due");
-
-                    b.HasIndex("UserId", "CategoryId", "DueDate")
-                        .HasDatabaseName("idx_tasks__user_category_due");
+                    b.HasIndex("UserId")
+                        .HasDatabaseName("ix_tasks_user_id");
 
                     b.ToTable("tasks", (string)null);
                 });
@@ -113,12 +110,6 @@ namespace ToDoApi.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid")
                         .HasColumnName("id");
-
-                    b.Property<string>("AuthId")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("character varying(255)")
-                        .HasColumnName("auth_id");
 
                     b.Property<string>("Email")
                         .IsRequired()
@@ -138,12 +129,14 @@ namespace ToDoApi.Migrations
                         .HasColumnType("character varying(100)")
                         .HasColumnName("last_name");
 
+                    b.Property<string>("PasswordHash")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("password_hash");
+
                     b.HasKey("Id")
                         .HasName("pk_users");
-
-                    b.HasIndex("AuthId")
-                        .IsUnique()
-                        .HasDatabaseName("ix_users_auth_id");
 
                     b.HasIndex("Email")
                         .IsUnique()

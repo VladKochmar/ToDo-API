@@ -9,11 +9,11 @@ using Todo.Api.Data;
 
 #nullable disable
 
-namespace ToDoApi.Migrations
+namespace Todo.Api.Migrations.App
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260420145925_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20260421072206_AddRefreshToken")]
+    partial class AddRefreshToken
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -134,6 +134,14 @@ namespace ToDoApi.Migrations
                         .HasMaxLength(255)
                         .HasColumnType("character varying(255)")
                         .HasColumnName("password_hash");
+
+                    b.Property<string>("RefreshToken")
+                        .HasColumnType("text")
+                        .HasColumnName("refresh_token");
+
+                    b.Property<DateTime?>("RefreshTokenExpiryTime")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("refresh_token_expiry_time");
 
                     b.HasKey("Id")
                         .HasName("pk_users");

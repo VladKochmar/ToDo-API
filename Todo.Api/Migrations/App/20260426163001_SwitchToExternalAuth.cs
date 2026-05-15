@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace ToDoApi.Migrations
+namespace Todo.Api.Migrations.App
 {
     /// <inheritdoc />
     public partial class SwitchToExternalAuth : Migration

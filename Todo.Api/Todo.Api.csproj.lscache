@@ -73,7 +73,7 @@ Exceptions/
  GlobalExceptionHandler.cs
  NotFoundException.cs
  ValidationExceptionHandler.cs
-Migrations/
+Migrations/App/
  20260420145925_InitialCreate.cs
  20260420145925_InitialCreate.Designer.cs
  20260421072206_AddRefreshToken.cs
@@ -87,10 +87,10 @@ Migrations/
  20260508081601_RemoveCreatedAtDefaultValue.cs
  20260508081601_RemoveCreatedAtDefaultValue.Designer.cs
  AppDbContextModelSnapshot.cs
- Global/
-  20260515100441_InitGlobal.cs
-  20260515100441_InitGlobal.Designer.cs
-  GlobalDbContextModelSnapshot.cs
+Migrations/Global/
+ 20260515100441_InitGlobal.cs
+ 20260515100441_InitGlobal.Designer.cs
+ GlobalDbContextModelSnapshot.cs
 Models/DTOs/
  CategoryRequest.cs
  CategoryResponse.cs
