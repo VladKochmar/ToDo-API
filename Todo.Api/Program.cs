@@ -38,21 +38,34 @@ builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 
 IConfigurationSection dbConnectionConfigs = builder.Configuration.GetSection("DbConnection");
 
-NpgsqlConnectionStringBuilder connectionStringBuilder = new()
+string GetConnectionString(IConfigurationSection section)
 {
-    Host = dbConnectionConfigs["Host"],
-    Port = int.Parse(dbConnectionConfigs["Port"] ?? "5432"),
-    Database = dbConnectionConfigs["Database"],
-    Username = dbConnectionConfigs["Username"],
-    Password = dbConnectionConfigs["Password"]
-};
+    NpgsqlConnectionStringBuilder builder = new()
+    {
+        Host = section["Host"],
+        Port = int.Parse(section["Port"] ?? "5432"),
+        Database = section["Database"],
+        Username = section["Username"],
+        Password = section["Password"]
+    };
 
-string connectionString = connectionStringBuilder.ConnectionString;
+    return builder.ConnectionString;
+}
+
+string todoConnectionString = GetConnectionString(dbConnectionConfigs.GetSection("Todo"));
+string globalConnectionString = GetConnectionString(dbConnectionConfigs.GetSection("Global"));
+
+builder.Services.AddDbContext<GlobalDbContext>(options =>
+{
+    options
+        .UseNpgsql(globalConnectionString)
+        .UseSnakeCaseNamingConvention();
+});
 
 builder.Services.AddDbContext<AppDbContext>(options =>
 {
     options
-        .UseNpgsql(connectionString)
+        .UseNpgsql(todoConnectionString)
         .UseSnakeCaseNamingConvention();
 });
 

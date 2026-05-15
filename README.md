@@ -110,6 +110,12 @@ Apply migration:
 dotnet ef database update --project Todo.Api
 ```
 
+Print migrations:
+
+```bash
+dotnet ef migrations list --context YourContext --project Todo.Api
+```
+
 ---
 
 ## Run Application
