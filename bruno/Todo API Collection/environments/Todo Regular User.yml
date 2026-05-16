@@ -1,0 +1,4 @@
+name: Todo Regular User
+variables:
+  - secret: true
+    name: jwt_token

@@ -12,6 +12,8 @@ using Todo.Api.Exceptions;
 using Todo.Api.Models.DTOs;
 using Todo.Api.Services;
 using Todo.Api.Validations;
+using Todo.Api.Authorization;
+using Microsoft.AspNetCore.Authorization;
 
 string ToDoSpecificOrigins = "ToDoSpecificOrigins";
 
@@ -103,6 +105,18 @@ builder.Services.AddAuthentication(options =>
                 return Task.CompletedTask;
             }
         };
+    });
+
+
+builder.Services.AddSingleton<IAuthorizationHandler, AdminOnlyHandler>();
+
+string? adminSub = builder.Configuration["Auth0:AdminSub"];
+
+builder.Services.AddAuthorizationBuilder()
+    .AddPolicy("AdminOnly", policy =>
+    {
+        policy.RequireAuthenticatedUser();
+        policy.Requirements.Add(new AdminOnlyRequirement(adminSub));
     });
 
 builder.Services.AddControllers();
