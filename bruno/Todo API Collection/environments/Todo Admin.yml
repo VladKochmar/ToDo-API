@@ -1,0 +1,4 @@
+name: Todo Admin
+variables:
+  - secret: true
+    name: jwt_token

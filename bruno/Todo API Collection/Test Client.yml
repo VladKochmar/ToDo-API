@@ -1,0 +1,17 @@
+info:
+  name: Test Client
+  type: http
+  seq: 14
+
+http:
+  method: GET
+  url: http://localhost:5212/api/v1/clients
+  auth:
+    type: bearer
+    token: "{{jwt_token}}"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
