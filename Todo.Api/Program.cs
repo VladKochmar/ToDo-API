@@ -135,10 +135,12 @@ builder.Services.AddScoped<IValidator<CreateUserRequest>, CreateUserRequestValid
 builder.Services.AddScoped<IValidator<CreateTaskRequest>, CreateTaskRequestValidator>();
 builder.Services.AddScoped<IValidator<UpdateTaskRequest>, UpdateTaskRequestValidator>();
 builder.Services.AddScoped<IValidator<CategoryRequest>, CategoryRequestValidator>();
+builder.Services.AddScoped<IValidator<ClientRequest>, ClientRequestValidator>();
 
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<ITaskService, TaskService>();
+builder.Services.AddScoped<IClientService, ClientService>();
 
 // Add services to the container.
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi

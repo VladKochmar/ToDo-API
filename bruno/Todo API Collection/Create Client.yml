@@ -1,11 +1,17 @@
 info:
-  name: Test Client
+  name: Create Client
   type: http
-  seq: 14
+  seq: 15
 
 http:
-  method: GET
+  method: POST
   url: http://localhost:5212/api/v1/clients
+  body:
+    type: json
+    data: |
+      {
+        "name": "Toyota"
+      }
   auth:
     type: bearer
     token: "{{jwt_token}}"

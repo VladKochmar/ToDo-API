@@ -1,0 +1,15 @@
+info:
+  name: Delete Client
+  type: http
+  seq: 17
+
+http:
+  method: DELETE
+  url: http://localhost:5212/api/v1/clients/019e365c-73b9-7e4f-b09e-24e6b4cd96e7
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
