@@ -1,0 +1,21 @@
+info:
+  name: Update Client
+  type: http
+  seq: 16
+
+http:
+  method: PUT
+  url: http://localhost:5212/api/v1/clients/019e365c-e66f-7691-ad6e-f72cdfda5c0c
+  body:
+    type: json
+    data: |-
+      {
+        "name": "Mazda"
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
