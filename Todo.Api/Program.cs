@@ -3,17 +3,22 @@ using System.Reflection;
 using Npgsql;
 using FluentValidation;
 
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
-using Todo.Api.Data;
 using Todo.Api.Exceptions;
 using Todo.Api.Models.DTOs;
+
+using Todo.Api.Authorization;
+
 using Todo.Api.Services;
 using Todo.Api.Validations;
-using Todo.Api.Authorization;
-using Microsoft.AspNetCore.Authorization;
+
+using Todo.Api.Data;
+using Todo.Api.Data.Factories;
+using Todo.Api.Data.Configurations;
 
 string ToDoSpecificOrigins = "ToDoSpecificOrigins";
 
@@ -53,6 +58,10 @@ string GetConnectionString(IConfigurationSection section)
 
     return builder.ConnectionString;
 }
+
+builder.Services.Configure<AdminDbOptions>(
+    builder.Configuration.GetSection("DbConnection:Admin")
+);
 
 string todoConnectionString = GetConnectionString(dbConnectionConfigs.GetSection("Todo"));
 string globalConnectionString = GetConnectionString(dbConnectionConfigs.GetSection("Global"));
@@ -137,10 +146,14 @@ builder.Services.AddScoped<IValidator<UpdateTaskRequest>, UpdateTaskRequestValid
 builder.Services.AddScoped<IValidator<CategoryRequest>, CategoryRequestValidator>();
 builder.Services.AddScoped<IValidator<ClientRequest>, ClientRequestValidator>();
 
+builder.Services.AddScoped<ITenantDbContextFactory, TenantDbContextFactory>();
+builder.Services.AddScoped<ITenantProvisioningService, TenantProvisioningService>();
+
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<ITaskService, TaskService>();
 builder.Services.AddScoped<IClientService, ClientService>();
+builder.Services.AddScoped<IDbCredentialsGenerator, DbCredentialsGenerator>();
 
 // Add services to the container.
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi

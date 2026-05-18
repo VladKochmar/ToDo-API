@@ -7,25 +7,34 @@ using Todo.Api.Models.Entities;
 
 namespace Todo.Api.Services;
 
-public class ClientService(GlobalDbContext context) : IClientService
+public class ClientService
+(
+  GlobalDbContext context, 
+  ITenantProvisioningService provisioning,
+  IDbCredentialsGenerator credentialsGenerator
+) : IClientService
 {
   public async Task<ClientResponse> Create(ClientRequest request)
   {
     string trimmedName = request.Name.Trim();
 
-    Client newClient = new()
+    DbCredentials credentials = credentialsGenerator.Generate();
+
+    Client client = new()
     {
       Id = Guid.CreateVersion7(),
       Name = trimmedName,
-      DbName = $"mock-name-{trimmedName}",
-      DbUser = $"mock-user-{trimmedName}",
-      DbPassword = $"mock-password-{trimmedName}"
+      DbName = credentials.DbName,
+      DbUser = credentials.DbUser,
+      DbPassword = credentials.DbPassword
     };
 
-    context.Clients.Add(newClient);
+    await provisioning.ProvisionTenant(client);
+
+    context.Clients.Add(client);
     await context.SaveChangesAsync();
 
-    return new ClientResponse(newClient.Id, newClient.Name);
+    return new ClientResponse(client.Id, client.Name);
   }
 
   public async Task Delete(Guid id)
