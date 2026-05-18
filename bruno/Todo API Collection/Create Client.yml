@@ -10,7 +10,7 @@ http:
     type: json
     data: |
       {
-        "name": "Toyota"
+        "name": "Opel"
       }
   auth:
     type: bearer
