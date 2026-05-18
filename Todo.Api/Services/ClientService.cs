@@ -10,7 +10,10 @@ namespace Todo.Api.Services;
 public class ClientService
 (
   GlobalDbContext context, 
+
   ITenantProvisioningService provisioning,
+  ITenantDeprovisioningService deprovisioning,
+
   IDbCredentialsGenerator credentialsGenerator
 ) : IClientService
 {
@@ -40,6 +43,8 @@ public class ClientService
   public async Task Delete(Guid id)
   {
     Client client = await GetClientOrThrow(id);
+
+    await deprovisioning.DropTenant(client);
 
     context.Clients.Remove(client);
     await context.SaveChangesAsync();

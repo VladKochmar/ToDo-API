@@ -147,7 +147,9 @@ builder.Services.AddScoped<IValidator<CategoryRequest>, CategoryRequestValidator
 builder.Services.AddScoped<IValidator<ClientRequest>, ClientRequestValidator>();
 
 builder.Services.AddScoped<ITenantDbContextFactory, TenantDbContextFactory>();
+
 builder.Services.AddScoped<ITenantProvisioningService, TenantProvisioningService>();
+builder.Services.AddScoped<ITenantDeprovisioningService, TenantDeprovisioningService>();
 
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
