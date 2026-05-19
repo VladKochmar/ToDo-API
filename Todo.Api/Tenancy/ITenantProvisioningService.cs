@@ -1,6 +1,6 @@
 using Todo.Api.Models.Entities;
 
-namespace Todo.Api.Services;
+namespace Todo.Api.Tenancy;
 
 public interface ITenantProvisioningService
 {

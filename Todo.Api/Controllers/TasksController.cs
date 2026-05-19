@@ -8,7 +8,7 @@ namespace Todo.Api.Controllers;
 
 [Authorize]
 [ApiController]
-[Route("api/v1")]
+[Route("api/v1/clients/{clientId:guid}")]
 public class TasksController(
   ITaskService service, 
   IUserContext userContext,
@@ -41,13 +41,13 @@ public class TasksController(
   }
 
   [HttpPost("tasks")]
-  public async Task<ActionResult<TaskResponse>> CreateTask(CreateTaskRequest request)
+  public async Task<ActionResult<TaskResponse>> CreateTask(Guid clientId, CreateTaskRequest request)
   {
     Guid userId = await userContext.UserId();
     await createValidator.ValidateAndThrowAsync(request);
 
     TaskResponse createdTask = await service.Create(userId, request);
-    return CreatedAtAction(nameof(GetTaskById), new { id = createdTask.Id }, createdTask);
+    return CreatedAtAction(nameof(GetTaskById), new { clientId, id = createdTask.Id }, createdTask);
   }
 
   [HttpPut("tasks/{id:guid}")]

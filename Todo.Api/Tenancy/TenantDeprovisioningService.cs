@@ -3,7 +3,7 @@ using Npgsql;
 using Todo.Api.Data.Configurations;
 using Todo.Api.Models.Entities;
 
-namespace Todo.Api.Services;
+namespace Todo.Api.Tenancy;
 
 public class TenantDeprovisioningService
 (

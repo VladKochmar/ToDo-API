@@ -5,7 +5,7 @@ info:
 
 http:
   method: GET
-  url: http://localhost:5212/api/v1/categories
+  url: http://localhost:5212/api/v1/clients/019e3f46-0c65-789a-90ae-202947c74028/categories
 
 settings:
   encodeUrl: true

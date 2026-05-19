@@ -7,7 +7,7 @@ namespace Todo.Api.Controllers;
 
 [Authorize]
 [ApiController]
-[Route("api/v1/users")]
+[Route("api/v1/clients/{clientId:guid}/users")]
 public class UsersController(IUserService service) : ControllerBase
 {
   [HttpPost]

@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 
 using Todo.Api.Data;
+using Todo.Api.Tenancy;
 using Todo.Api.Exceptions;
 using Todo.Api.Models.DTOs;
 using Todo.Api.Models.Entities;

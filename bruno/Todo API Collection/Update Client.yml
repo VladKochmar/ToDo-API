@@ -5,7 +5,7 @@ info:
 
 http:
   method: PUT
-  url: http://localhost:5212/api/v1/clients/019e365c-e66f-7691-ad6e-f72cdfda5c0c
+  url: http://localhost:5212/api/v1/clients/019e3f46-0c65-789a-90ae-202947c74028
   body:
     type: json
     data: |-
