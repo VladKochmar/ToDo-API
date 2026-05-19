@@ -5,7 +5,7 @@ info:
 
 http:
   method: GET
-  url: http://localhost:5212/api/v1/tasks/019e274e-15db-79b0-adea-1c564fbee8ca
+  url: http://localhost:5212/api/v1/clients/019e3f91-3f61-7aeb-a84e-423704c8c373/tasks/019e3f9c-42b1-7143-b84c-bdd22798b170
   auth: inherit
 
 settings:

@@ -5,16 +5,16 @@ info:
 
 http:
   method: PUT
-  url: http://localhost:5212/api/v1/tasks/019e276b-31b3-76fc-84f5-bdb0025922ef
+  url: http://localhost:5212/api/v1/clients/019e3f91-3f61-7aeb-a84e-423704c8c373/tasks/019e3fa4-7321-768e-968f-a511e78a3db7
   body:
     type: json
     data: |-
       {
-        "title": "Test Todo Api",
+        "title": "Do something super important",
         "isCompleted": true,
         "description": null,
-        "dueDate": "2026-05-16T17:06:32.193Z",
-        "categoryId": "019e2763-bcd5-7015-816f-5a3b863cd44d"
+        "dueDate": "2026-05-25T17:06:32.193Z",
+        "categoryId": "019e3f95-c673-7317-8e8b-ddd4384f9190"
       }
   auth: inherit
 

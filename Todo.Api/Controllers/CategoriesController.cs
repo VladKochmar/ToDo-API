@@ -8,7 +8,7 @@ namespace Todo.Api.Controllers;
 
 [Authorize]
 [ApiController]
-[Route("api/v1/categories")]
+[Route("api/v1/clients/{clientId:guid}/categories")]
 public class CategoriesController(
   ICategoryService service, 
   IUserContext userContext, 
@@ -31,12 +31,12 @@ public class CategoriesController(
   }
 
   [HttpPost]
-  public async Task<ActionResult<CategoryResponse>> CreateCategory(CategoryRequest request)
+  public async Task<ActionResult<CategoryResponse>> CreateCategory(Guid clientId, CategoryRequest request)
   {
     Guid userId = await userContext.UserId();
     await validator.ValidateAndThrowAsync(request);
     CategoryResponse createdCategory = await service.Create(userId, request);
-    return CreatedAtAction(nameof(GetCategoryById), new { id = createdCategory.Id }, createdCategory);
+    return CreatedAtAction(nameof(GetCategoryById), new { clientId, id = createdCategory.Id }, createdCategory);
   }
 
   [HttpPut("{id:guid}")]

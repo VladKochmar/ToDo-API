@@ -5,7 +5,7 @@ info:
 
 http:
   method: DELETE
-  url: http://localhost:5212/api/v1/tasks/019e2769-d53b-74af-91a4-a400f69df177
+  url: http://localhost:5212/api/v1/clients/019e3f91-3f61-7aeb-a84e-423704c8c373/tasks/019e3fa4-7321-768e-968f-a511e78a3db7
   auth: inherit
 
 settings:

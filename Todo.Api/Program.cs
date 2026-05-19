@@ -17,6 +17,8 @@ using Todo.Api.Services;
 using Todo.Api.Validations;
 
 using Todo.Api.Data;
+using Todo.Api.Tenancy;
+using Todo.Api.Middlewares;
 using Todo.Api.Data.Factories;
 using Todo.Api.Data.Configurations;
 
@@ -73,11 +75,15 @@ builder.Services.AddDbContext<GlobalDbContext>(options =>
         .UseSnakeCaseNamingConvention();
 });
 
-builder.Services.AddDbContext<AppDbContext>(options =>
+builder.Services.AddScoped(sp =>
 {
-    options
-        .UseNpgsql(todoConnectionString)
-        .UseSnakeCaseNamingConvention();
+    TenantContext tenantContext = sp.GetRequiredService<TenantContext>();
+
+    TenantInfo tenant = tenantContext.CurrentTenant ?? throw new NotFoundException("Tenant was not found.");
+
+    ITenantDbContextFactory factory = sp.GetRequiredService<ITenantDbContextFactory>();
+
+    return factory.Create(tenant.ConnectionString);
 });
 
 builder.Services.AddAuthentication(options =>
@@ -146,6 +152,8 @@ builder.Services.AddScoped<IValidator<UpdateTaskRequest>, UpdateTaskRequestValid
 builder.Services.AddScoped<IValidator<CategoryRequest>, CategoryRequestValidator>();
 builder.Services.AddScoped<IValidator<ClientRequest>, ClientRequestValidator>();
 
+
+builder.Services.AddScoped<TenantContext>();
 builder.Services.AddScoped<ITenantDbContextFactory, TenantDbContextFactory>();
 
 builder.Services.AddScoped<ITenantProvisioningService, TenantProvisioningService>();
@@ -181,6 +189,9 @@ app.UseExceptionHandler();
 app.UseCors(ToDoSpecificOrigins);
 
 app.UseAuthentication();
+
+app.UseMiddleware<TenantResolutionMiddleware>();
+
 app.UseAuthorization();
 
 app.MapControllers();

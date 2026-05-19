@@ -5,15 +5,15 @@ info:
 
 http:
   method: POST
-  url: http://localhost:5212/api/v1/tasks
+  url: http://localhost:5212/api/v1/clients/019e3f91-3f61-7aeb-a84e-423704c8c373/tasks
   body:
     type: json
     data: |-
       {
-        "title": "Test C# App",
+        "title": "Play football",
         "description": null,
-        "dueDate": "2026-05-15T16:55:26.274Z",
-        "categoryId": "019e2763-bcd5-7015-816f-5a3b863cd44d"
+        "dueDate": null,
+        "categoryId": "019e3f95-c673-7317-8e8b-ddd4384f9190"
       }
   auth: inherit
 

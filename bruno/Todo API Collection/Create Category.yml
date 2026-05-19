@@ -5,12 +5,12 @@ info:
 
 http:
   method: POST
-  url: http://localhost:5212/api/v1/categories
+  url: http://localhost:5212/api/v1/clients/019e3f91-76b2-7f86-96d7-1c6310df993f/categories
   body:
     type: json
     data: |-
       {
-        "title": "Health"
+        "title": "Month"
       }
   auth: inherit
 
