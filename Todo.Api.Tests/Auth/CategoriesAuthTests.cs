@@ -12,9 +12,12 @@ public class CategoriesAuthTests(WebApplicationFactory<Program> factory)
   {
     // Arrange
     using HttpClient httpClient = factory.CreateClient();
+
+    Guid clientId = Guid.CreateVersion7();
     
     // Act
-    HttpResponseMessage response = await httpClient.GetAsync("api/v1/categories");
+    HttpResponseMessage response = await httpClient
+      .GetAsync($"api/v1/clients/{clientId}/categories");
     
     // Assert
     response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);

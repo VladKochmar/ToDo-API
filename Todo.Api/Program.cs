@@ -189,10 +189,9 @@ app.UseExceptionHandler();
 app.UseCors(ToDoSpecificOrigins);
 
 app.UseAuthentication();
+app.UseAuthorization();
 
 app.UseMiddleware<TenantResolutionMiddleware>();
-
-app.UseAuthorization();
 
 app.MapControllers();
 

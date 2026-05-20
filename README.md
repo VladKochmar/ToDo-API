@@ -15,6 +15,22 @@ ASP.NET Core Web API for managing tasks
 
 ---
 
+## Multy-tenant model
+
+Each client has:
+
+- a separate PostgreSQL database;
+- a dedicated database user;
+- an isolated connection string;
+- row in a global clients table containing its own metadata.
+
+Application requires resolve the tenant context dynamically
+and connect only to that tenant's database.
+
+Because each tenant uses a physically separated database and DB user,
+cross-tenant data leakage is prevented even if application level filtering
+is accidentally omitted.
+
 ## Clone Repository
 
 ```bash
